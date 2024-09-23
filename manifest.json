@@ -1,15 +1,8 @@
 {
     "manifest_version": 3,
-    "name": "Hello Extensions",
-    "description": "Base Level Extension",
+    "name": "YT ads speedup",
+    "description": "YT ads speedup",
     "version": "1.0",
-    "action": {
-      "default_popup": "popup.html"
-    },
-    "permissions": [
-      "activeTab",
-      "nativeMessaging"
-    ],
     "content_scripts": [
       {
         "matches": ["*://*.youtube.com/*"],

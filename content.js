@@ -1,79 +1,48 @@
-// var interval = setInterval(start, 1000);
-// console.log("content.js loaded")
-// function start() {
-//     var ads = document.getElementsByTagName("ytd-player-legacy-desktop-watch-ads-renderer")[0]
-//     if (ads) {
-//         ads.remove()
-//     }
-//     ads = document.getElementsByClassName("ytd-ad-slot-renderer")[0]
-//     if (ads) {
-//         ads.remove()
-//     }
+const debug = true; // Set this to false to disable debug logs
 
-//     if (document.getElementsByClassName("video-ads")[0].childElementCount> 0) {
-//         document.getElementsByTagName("video")[0].playbackRate = 16
-//         console.log("set to 16x")
-//     }
-//     else {
-//         document.getElementsByTagName("video")[0].playbackRate = 1
+function logDebug(message) {
+    if (debug) {
+        console.log(message);
+    }
+}
 
-//     }
-
-// }
-
-
-// chrome.runtime.onMessage.addListener((request, sender, sendResponse)=> {
-//     if (!interval)
-//         return
-
-//     if (!request.enabled)
-//         clearInterval(interval);
-//     else
-//         interval = setInterval(start, 1000);
-
-// })
-var flag = false;
-// console.log("content.js loaded");
 window.onload = () => {
-    const doc = document.documentElement || document.body;
-    // console.log(doc);
+    
     const observer = new MutationObserver((entries) => {
         for (let entry of entries) {
-            // console.log(entry);
-            // console.log(entry.target);
-            // console.log(entry.target.className);
-            // console.log(entry.target.className == "video-ads ytp-ad-module");
+
             if (entry.target.className == "video-ads ytp-ad-module") {
-                console.log("set video playback rate");
-                // if (entry.target.getElementsByClassName("video-ads")[0] !== undefined || (entry.target.getElementsByClassName("video-ads")[0].childElementCount > 0)) {
-                //     document.getElementsByTagName("video")[0].playbackRate = 16;
-                //     console.log("set to 16x");
-                //     flag = true;
-                // } else if (flag) {
-                //     document.getElementsByTagName("video")[0].playbackRate = 1;
-                //     flag = false;
-                // }
+                logDebug("set video playback rate");
                 if (entry.target.childElementCount > 0) {
                     document.getElementsByTagName("video")[0].playbackRate = 16;
-                    console.log("set to 16x");
-                    flag = true;
-                } else if (flag) {
-                    document.getElementsByTagName("video")[0].playbackRate = 1;
-                    flag = false;
+                    logDebug("set to 16x");
+                    logDebug(entry.target.getElementsByTagName("Button")[0]);
                 }
-
             }
             if (entry.target.tagName == "YTD-PLAYER-LEGACY-DESKTOP-WATCH-ADS-RENDERER") {
-                console.log("remove ads YTD-PLAYER-LEGACY-DESKTOP-WATCH-ADS-RENDERER");
+                logDebug("remove ads YTD-PLAYER-LEGACY-DESKTOP-WATCH-ADS-RENDERER");
                 entry.target.remove();
             }
-            if (entry.target.className == "ytd-ad-slot-renderer") {
-                console.log("remove ads ytd-ad-slot-renderer");
-                entry.target.remove();
+            // if (entry.target.tagName == "ytd-ad-slot-renderer") {
+            //     logDebug("remove ads ytd-ad-slot-renderer");
+            //     entry.target.remove();
+            // }
+            if (entry.target.className == "ytp-skip-ad-button") {
+                entry.target.click();
             }
 
         }
-
+        var skipBtn = document.getElementsByClassName("ytp-skip-ad-button")[0];
+        if (skipBtn) {
+            skipBtn.click();
+        }
+        var ads = document.getElementsByTagName("ytd-ad-slot-renderer");
+        for (let ad of ads) {
+            logDebug("remove ads ytd-ad-slot-renderer");
+            ad.remove();
+        }
     });
+
+    const doc = document.documentElement || document.body;
     observer.observe(doc, { childList: true, subtree: true });
 }
